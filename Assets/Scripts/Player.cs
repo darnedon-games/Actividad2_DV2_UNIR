@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
     private void Mover(Vector2 ctx)
     {
         direccionInput = new Vector3(ctx.x, 0, ctx.y);
-        RotarHaciaDestino();
     }
     
     private void Saltar()
@@ -50,6 +49,11 @@ public class Player : MonoBehaviour
         controller.Move(direccionMovimiento * (velocidadMovimiento * Time.deltaTime));
         
         anim.SetFloat("velocidad", controller.velocity.magnitude);
+
+        if (direccionMovimiento.sqrMagnitude > 0)
+        {
+            RotarHaciaDestino();
+        }
     }
 
     private void RotarHaciaDestino()
