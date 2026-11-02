@@ -16,6 +16,14 @@ public class InputManagerSO : ScriptableObject
         misControles.Gameplay.Mover.performed += Mover;
         misControles.Gameplay.Mover.canceled += Mover;
     }
+    
+    private void OnDisable()
+    {
+        misControles.Gameplay.Saltar.started -= Saltar;
+        misControles.Gameplay.Mover.performed -= Mover;
+        misControles.Gameplay.Mover.canceled -= Mover;
+        misControles.Gameplay.Disable();
+    }
 
     private void Mover(InputAction.CallbackContext ctx)
     {
