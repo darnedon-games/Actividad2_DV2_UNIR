@@ -1500,10 +1500,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   alturaComprobacion: 2
-  espejosMinimos: 4
-  espejosMaximos: 8
+  espejosMinimos: 7
+  espejosMaximos: 12
   probabilidadGiro: 0.4
-  espejosFalsos: 3
   intentosMaximos: 500
   puerta: {fileID: 900000999}
 --- !u!114 &900000999
