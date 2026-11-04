@@ -103,6 +103,16 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""priority"": 0
                 },
                 {
+                    ""name"": ""Interactuar"",
+                    ""type"": ""Button"",
+                    ""id"": ""4b1f6c2e-8d3a-4e5f-9a7b-1c2d3e4f5a6b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
                     ""name"": ""Mover"",
                     ""type"": ""Value"",
                     ""id"": ""6fa5d00c-8529-4d5f-b570-0f4a8629c6da"",
@@ -114,6 +124,28 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 }
             ],
             ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7e2a9c41-3b5d-4f6e-8a1b-2c3d4e5f6a7b"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interactuar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c3b8d52-4e6f-4a7b-9c2d-3e4f5a6b7c8d"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interactuar"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
                 {
                     ""name"": """",
                     ""id"": ""6b8b6490-95c4-40b7-adb8-3c627c6c926f"",
@@ -265,6 +297,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Saltar = m_Gameplay.FindAction("Saltar", throwIfNotFound: true);
+        m_Gameplay_Interactuar = m_Gameplay.FindAction("Interactuar", throwIfNotFound: true);
         m_Gameplay_Mover = m_Gameplay.FindAction("Mover", throwIfNotFound: true);
     }
 
@@ -347,6 +380,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Gameplay;
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_Saltar;
+    private readonly InputAction m_Gameplay_Interactuar;
     private readonly InputAction m_Gameplay_Mover;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
@@ -363,6 +397,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/Saltar".
         /// </summary>
         public InputAction @Saltar => m_Wrapper.m_Gameplay_Saltar;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/Interactuar".
+        /// </summary>
+        public InputAction @Interactuar => m_Wrapper.m_Gameplay_Interactuar;
         /// <summary>
         /// Provides access to the underlying input action "Gameplay/Mover".
         /// </summary>
@@ -396,6 +434,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Saltar.started += instance.OnSaltar;
             @Saltar.performed += instance.OnSaltar;
             @Saltar.canceled += instance.OnSaltar;
+            @Interactuar.started += instance.OnInteractuar;
+            @Interactuar.performed += instance.OnInteractuar;
+            @Interactuar.canceled += instance.OnInteractuar;
             @Mover.started += instance.OnMover;
             @Mover.performed += instance.OnMover;
             @Mover.canceled += instance.OnMover;
@@ -413,6 +454,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Saltar.started -= instance.OnSaltar;
             @Saltar.performed -= instance.OnSaltar;
             @Saltar.canceled -= instance.OnSaltar;
+            @Interactuar.started -= instance.OnInteractuar;
+            @Interactuar.performed -= instance.OnInteractuar;
+            @Interactuar.canceled -= instance.OnInteractuar;
             @Mover.started -= instance.OnMover;
             @Mover.performed -= instance.OnMover;
             @Mover.canceled -= instance.OnMover;
@@ -463,6 +507,13 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSaltar(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Interactuar" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInteractuar(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Mover" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -17,6 +17,16 @@
                     "priority": 0
                 },
                 {
+                    "name": "Interactuar",
+                    "type": "Button",
+                    "id": "4b1f6c2e-8d3a-4e5f-9a7b-1c2d3e4f5a6b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
                     "name": "Mover",
                     "type": "Value",
                     "id": "6fa5d00c-8529-4d5f-b570-0f4a8629c6da",
@@ -28,6 +38,28 @@
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "7e2a9c41-3b5d-4f6e-8a1b-2c3d4e5f6a7b",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interactuar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9c3b8d52-4e6f-4a7b-9c2d-3e4f5a6b7c8d",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interactuar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "6b8b6490-95c4-40b7-adb8-3c627c6c926f",
@@ -175,4 +207,4 @@
         }
     ],
     "controlSchemes": []
-}
+}
