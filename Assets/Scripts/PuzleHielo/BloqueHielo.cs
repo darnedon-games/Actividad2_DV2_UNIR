@@ -9,7 +9,7 @@ using UnityEngine;
 public class BloqueHielo : Interactuable
 {
     public GeneradorPuzleHielo generador;
-    public float velocidad = 8f;
+    public float velocidad = 6f;
     public Color colorResaltado = new Color(1f, 0.9f, 0.3f);
 
     private Renderer render;

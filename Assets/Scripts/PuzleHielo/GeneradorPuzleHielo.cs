@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEditor.PlayerSettings;
 
 // Genera el puzle de hielo al cargar la escena.
 //
@@ -9,39 +10,20 @@ using UnityEngine.Events;
 // una roca, una pared o el borde de la zona. Hay que dejarlo PARADO encima del
 // interruptor (si solo pasa por encima, no cuenta).
 //
-// COMO FUNCIONA:
+// CÓMO FUNCIONA:
 // 1. Dividimos la zona (el recuadro cian de la escena) en celdas, igual que en el puzle de espejos.
 // 2. Miramos cada celda con Physics.CheckBox. Si hay algo dentro (una pared, una caja...)
-//    la celda queda BLOQUEADA y cuenta como obstaculo (se ve en rojo en la escena).
+//    la celda queda BLOQUEADA y cuenta como obstáculo (se ve en rojo en la escena).
 // 3. Ponemos rocas al azar y comprobamos que no dejen zonas cerradas.
 // 4. Ponemos el bloque en una celda libre al azar.
-// 5. "Jugamos" todas las partidas posibles a la vez, primero las de 1 empujon, luego las de 2...
-//    (es una "busqueda en anchura"). Asi sabemos el MINIMO de empujones para llevar el bloque
-//    a cada celda. Tenemos en cuenta donde puede estar el jugador: para empujar tiene que
-//    poder llegar andando a la celda de detras del bloque (el bloque y las rocas le cortan el paso).
-// 6. El interruptor va en la celda mas dificil que este entre "Empujes Minimos" y "Empujes Maximos".
-// Si no sale, probamos con otras rocas. Si despues de muchos intentos sigue sin salir,
-// bajamos los empujes minimos de uno en uno. Cuando el puzle es bueno, creamos los objetos.
-//
-// SIEMPRE SE PUEDE RESOLVER:
-// - Al generar, comprobamos que la solucion existe (paso 5).
-// - Durante el juego se usan exactamente las mismas reglas que al generar.
-// - Si el bloque se queda en un sitio desde el que ya no se puede llegar al interruptor
-//   (por ejemplo, pegado a una pared), vuelve solo a la salida, y desde la salida sabemos que se puede.
-// - Ni el bloque ni el interruptor pueden cerrar el paso a ninguna parte de la sala,
-//   ni ponerse delante de las entradas (mira "Accesos").
-// - Si aun asi no se pudiera generar (zona minuscula), se abre la puerta directamente.
-//
-// PARA USARLO EN OTRO PROYECTO:
-// - Copia las carpetas Comun y PuzleHielo.
-// - Crea un objeto vacio, ponlo SOBRE EL SUELO de la sala y añadele este script.
-// - Ajusta "Tamaño Zona" hasta que el recuadro cian llegue justo hasta las paredes de la sala.
-//   (El jugador solo puede empujar desde dentro de la zona: si queda suelo entre la zona y
-//   la pared, desde ahi no podra empujar y el bloque se parara en el borde de la zona.)
-// - En "Accesos" arrastra las puertas por las que se entra y se sale de la sala.
-// - En "Al Resolver" conecta lo que deba pasar al resolverlo (por ejemplo Puerta > Abrir).
-// - En tu jugador, al pulsar interactuar, llama a Interactuar(transform) del Interactuable
-//   que tenga delante (mira Player.cs de este proyecto como ejemplo).
+// 5. "Jugamos" todas las partidas posibles a la vez, primero las de 1 empujón, luego las de 2, etc...
+//    (es una "búsqueda en anchura"). Así sabemos el MÍNIMO de empujones para llevar el bloque
+//    a cada celda. Tenemos en cuenta dónde puede estar el jugador: para empujar tiene que
+//    poder llegar andando a la celda de detrás del bloque (el bloque y las rocas le cortan el paso).
+// 6. El interruptor va en la celda mas dificil que este entre "Empujes Mínimos" y "Empujes Máximos".
+// Si no sale, probamos con otras rocas. Si después de muchos intentos sigue sin salir,
+// bajamos los empujes mínimos de uno en uno. Cuando el puzle es bueno, creamos los objetos.
+
 public class GeneradorPuzleHielo : MonoBehaviour
 {
     [Header("Zona del puzle")]
@@ -63,7 +45,8 @@ public class GeneradorPuzleHielo : MonoBehaviour
     [Header("Si el bloque se atasca")]
     [SerializeField] private float segundosAntesDeReiniciar = 1f;
 
-    [Header("Prefabs (opcionales: si estan vacios se crean cubos)")]
+    [Header("Prefabs (opcionales)")]
+    // si están vacíos se crean cubos)
     [SerializeField] private GameObject prefabBloque;
     [SerializeField] private GameObject prefabRoca;
     [SerializeField] private GameObject prefabInterruptor;
@@ -72,7 +55,7 @@ public class GeneradorPuzleHielo : MonoBehaviour
     [SerializeField] private bool crearSueloHielo = true;
     [SerializeField] private Color colorInterruptorActivado = Color.green;
 
-    [Header("Que pasa al resolverlo")]
+    [Header("Al resolver")]
     [SerializeField] private UnityEvent alResolver;
 
     private int columnas;

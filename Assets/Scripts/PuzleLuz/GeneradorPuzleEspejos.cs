@@ -18,7 +18,7 @@ using UnityEngine.Events;
 //    Un espejo solo se enlaza con otro que este MAS ADELANTE en el camino del rayo.
 // 5. Desordenamos. Primero decidimos cuantas veces tendra que pulsar el jugador
 //    cada espejo (de 1 a 3) de forma que sumen al menos "Pulsaciones Minimas".
-//    Despues hacemos esas pulsaciones "al reves" desde la solucion.
+//    Despues hacemos esas pulsaciones "al revés" desde la solución.
 //    Como los enlaces solo van hacia delante, cada espejo tiene una unica forma de
 //    quedar bien, asi que el jugador necesitara EXACTAMENTE esas pulsaciones.
 // 6. Por seguridad simulamos el rayo y comprobamos que no haya un atajo por otro
@@ -26,14 +26,7 @@ using UnityEngine.Events;
 //
 // Todo esto se hace primero solo con numeros (sin crear objetos).
 // Cuando el puzle es bueno, creamos los cubos de verdad.
-//
-// PARA USARLO EN OTRO PROYECTO:
-// - Copia las carpetas Comun y PuzleLuz.
-// - Crea un objeto vacio, ponlo SOBRE EL SUELO de la sala y añadele este script.
-// - Ajusta "Tamaño Zona" hasta que el recuadro cian quepa dentro de la sala.
-// - En "Al Resolver" conecta lo que deba pasar al resolverlo (por ejemplo Puerta > Abrir).
-// - En tu jugador, al pulsar interactuar, llama a Interactuar() del Interactuable que tenga
-//   delante (mira Player.cs de este proyecto como ejemplo).
+
 public class GeneradorPuzleEspejos : MonoBehaviour
 {
     [Header("Zona del puzle")]
