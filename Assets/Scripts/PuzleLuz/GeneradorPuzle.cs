@@ -34,16 +34,16 @@ using UnityEngine;
 //   (mira Player.cs de este proyecto como ejemplo).
 public class GeneradorPuzle : MonoBehaviour
 {
-    [Header("Zona del puzle (recuadro cian en la escena)")]
+    [Header("Zona del puzle")]
     [Tooltip("Ancho (X) y largo (Z) de la zona en metros. El objeto debe estar sobre el suelo y con escala 1.")]
     [SerializeField] private Vector2 tamanoZona = new Vector2(14f, 12f);
-    [Tooltip("Tamaño de cada celda. Mejor que sea mas grande que el jugador para que pueda pasar entre espejos.")]
+    [Tooltip("Tamaño de cada celda. Mas grande que el jugador para que pueda pasar entre espejos.")]
     [SerializeField] private float tamanoCelda = 2f;
     [Tooltip("Altura del rayo de luz sobre el suelo.")]
     [SerializeField] private float alturaRayo = 1f;
 
-    [Header("Deteccion de obstaculos")]
-    [Tooltip("Que capas cuentan como obstaculo. Por defecto todas.")]
+    [Header("Detección de obstáculos")]
+    [Tooltip("Qué capas cuentan como obstáculo. Por defecto todas.")]
     [SerializeField] private LayerMask capasObstaculos = ~0;
     [Tooltip("Altura de la caja con la que se comprueba si una celda esta libre.")]
     [SerializeField] private float alturaComprobacion = 2f;
@@ -59,6 +59,15 @@ public class GeneradorPuzle : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float probabilidadEnlace = 0.5f;
     [SerializeField] private int intentosMaximos = 500;
+
+    [Header("Prefabs (opcionales: si estan vacios se crean cubos)")]
+    [Tooltip("Pivote en el suelo. La cara que refleja mira hacia su eje Z (flecha azul). " +
+             "Necesita un collider plano que llegue a la altura del rayo y debe caber en una celda.")]
+    [SerializeField] private GameObject prefabEspejo;
+    [Tooltip("Pivote en el suelo. Dispara hacia su eje Z (flecha azul). El rayo sale a la altura del rayo.")]
+    [SerializeField] private GameObject prefabEmisor;
+    [Tooltip("Pivote en el suelo. Necesita un collider que llegue a la altura del rayo.")]
+    [SerializeField] private GameObject prefabReceptor;
 
     [Header("Que pasa al resolverlo")]
     [SerializeField] private Puerta puerta;
@@ -106,7 +115,7 @@ public class GeneradorPuzle : MonoBehaviour
         for (int i = 0; i < intentosMaximos; i++)
         {
             // la primera mitad de intentos exigimos que el receptor quede lejos del emisor.
-            // si no sale (por ejemplo, por muchos obstaculos), en la segunda mitad no lo exigimos.
+            // si no sale (por ejemplo, por muchos obstáculos), en la segunda mitad no lo exigimos.
             bool exigirDistancia = i < intentosMaximos / 2;
 
             if (IntentarCrearCamino(exigirDistancia) == false)
@@ -126,8 +135,8 @@ public class GeneradorPuzle : MonoBehaviour
 
         if (puzleCreado == false)
         {
-            Debug.LogError("No se ha podido generar el puzle. Prueba con menos pulsaciones minimas, " +
-                           "mas espejos minimos, una zona mas grande o menos obstaculos.");
+            Debug.LogError("No se ha podido generar el puzle. Prueba con menos pulsaciones mínimas, " +
+                           "más espejos mínimos, una zona más grande o con menos obstáculos.");
             return;
         }
 
@@ -460,7 +469,7 @@ public class GeneradorPuzle : MonoBehaviour
                 {
                     girosEspejos[i] = giros[i];
                 }
-                Debug.Log("Puzle de luz: " + numeroEspejos + " espejos, se resuelve con " + total + " pulsaciones");
+                //Debug.Log("Puzle de luz: " + numeroEspejos + " espejos, se resuelve con " + total + " pulsaciones");
                 return true;
             }
         }
@@ -568,15 +577,28 @@ public class GeneradorPuzle : MonoBehaviour
         // emisor
         Vector3 posEmisor = PosicionCelda(celdaEmisor.x, celdaEmisor.y);
         Quaternion rotEmisor = Quaternion.LookRotation(DireccionMundo(direccionEmisor), transform.up);
-        GameObject emisor = CrearCubo("Emisor de luz", posEmisor, rotEmisor,
+        GameObject emisor = CrearPieza(prefabEmisor, "Emisor de luz", posEmisor, rotEmisor,
             new Vector3(tamanoCelda * 0.3f, alturaRayo * 2f, tamanoCelda * 0.3f), Color.red);
-        emisor.AddComponent<EmisorLuz>();
+        EmisorLuz scriptEmisor = emisor.GetComponent<EmisorLuz>();
+        if (scriptEmisor == null)
+        {
+            scriptEmisor = emisor.AddComponent<EmisorLuz>();
+        }
+        // el cubo tiene el centro a la altura del rayo, pero el prefab tiene el pivote en el suelo
+        if (prefabEmisor != null)
+        {
+            scriptEmisor.alturaSalida = alturaRayo;
+        }
 
         // receptor
         Vector3 posReceptor = PosicionCelda(celdaReceptor.x, celdaReceptor.y);
-        GameObject receptor = CrearCubo("Receptor", posReceptor, transform.rotation,
+        GameObject receptor = CrearPieza(prefabReceptor, "Receptor", posReceptor, transform.rotation,
             new Vector3(tamanoCelda * 0.4f, alturaRayo * 2f, tamanoCelda * 0.4f), Color.yellow);
-        Receptor scriptReceptor = receptor.AddComponent<Receptor>();
+        Receptor scriptReceptor = receptor.GetComponent<Receptor>();
+        if (scriptReceptor == null)
+        {
+            scriptReceptor = receptor.AddComponent<Receptor>();
+        }
         scriptReceptor.generador = this;
 
         // espejos, ya desordenados
@@ -600,11 +622,31 @@ public class GeneradorPuzle : MonoBehaviour
     private Espejo CrearEspejo(Vector2Int celda, Quaternion rotacion)
     {
         Vector3 posicion = PosicionCelda(celda.x, celda.y);
-        // la cara del espejo mira hacia su eje Z (flecha azul).
-        // Si mas adelante usas un prefab, hazlo aqui con Instantiate y que mire tambien hacia Z.
-        GameObject espejo = CrearCubo("Espejo " + celda.x + "," + celda.y, posicion, rotacion,
+        // la cara del espejo mira hacia su eje Z (flecha azul)
+        GameObject espejo = CrearPieza(prefabEspejo, "Espejo " + celda.x + "," + celda.y, posicion, rotacion,
             new Vector3(tamanoCelda * 0.6f, 1.6f, 0.1f), new Color(0.6f, 0.9f, 1f));
-        return espejo.AddComponent<Espejo>();
+
+        Espejo scriptEspejo = espejo.GetComponent<Espejo>();
+        if (scriptEspejo == null)
+        {
+            scriptEspejo = espejo.AddComponent<Espejo>();
+        }
+        return scriptEspejo;
+    }
+
+    // Si hay prefab, lo crea con el pivote en el suelo.
+    // Si no hay prefab, crea un cubo con la escala y el color indicados.
+    private GameObject CrearPieza(GameObject prefab, string nombre, Vector3 posicionSuelo, Quaternion rotacion,
+                                  Vector3 escalaCubo, Color colorCubo)
+    {
+        if (prefab != null)
+        {
+            GameObject pieza = Instantiate(prefab, posicionSuelo, rotacion, transform);
+            pieza.name = nombre;
+            return pieza;
+        }
+
+        return CrearCubo(nombre, posicionSuelo, rotacion, escalaCubo, colorCubo);
     }
 
     // Crea un cubo con su centro a la altura del rayo

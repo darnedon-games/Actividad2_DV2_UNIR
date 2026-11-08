@@ -9,6 +9,7 @@ public class InputManagerSO : ScriptableObject
     public event Action OnSaltar;
     public event Action<Vector2> OnMover;
     public event Action OnInteractuar;
+
     private void OnEnable()
     {
         misControles = new Controls();

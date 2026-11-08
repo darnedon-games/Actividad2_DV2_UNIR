@@ -6,6 +6,8 @@ using UnityEngine;
 // El rayo se dibuja con un LineRenderer.
 public class EmisorLuz : MonoBehaviour
 {
+    [Tooltip("Altura sobre el pivote de la que sale el rayo. La pone el generador si usas un prefab.")]
+    public float alturaSalida = 0f;
     public float distanciaMaxima = 50f;
     public int rebotesMaximos = 20;
 
@@ -19,7 +21,12 @@ public class EmisorLuz : MonoBehaviour
 
     void Start()
     {
-        linea = gameObject.AddComponent<LineRenderer>();
+        // si el prefab ya trae su propio LineRenderer lo usamos, si no lo creamos
+        linea = GetComponent<LineRenderer>();
+        if (linea == null)
+        {
+            linea = gameObject.AddComponent<LineRenderer>();
+        }
         linea.startWidth = anchoRayo;
         linea.endWidth = anchoRayo;
 
@@ -41,7 +48,7 @@ public class EmisorLuz : MonoBehaviour
 
         // un rayo que empieza dentro de un collider no choca con el,
         // asi que podemos salir desde dentro del propio emisor
-        Vector3 origen = transform.position;
+        Vector3 origen = transform.position + transform.up * alturaSalida;
         Vector3 direccion = transform.forward;
         puntos.Add(origen);
 
@@ -60,7 +67,17 @@ public class EmisorLuz : MonoBehaviour
                 {
                     // rebotamos el rayo usando la normal de la cara del espejo
                     direccion = Vector3.Reflect(direccion, hit.normal);
-                    origen = hit.point + direccion * 0.01f;
+
+                    // el rebote lo hacemos desde el CENTRO del espejo y no desde su cara.
+                    // Si no, cada rebote desplaza un poco el rayo por el grosor del espejo
+                    // y acaba pasando rozando otros espejos en vez de chocar con ellos.
+                    Vector3 centroEspejo = espejo.transform.position;
+                    centroEspejo.y = hit.point.y;
+                    puntos[puntos.Count - 1] = centroEspejo;
+
+                    // (un rayo que empieza dentro de un collider no choca con el,
+                    // asi que no choca con el propio espejo al salir)
+                    origen = centroEspejo + direccion * 0.01f;
                 }
                 else if (receptor != null)
                 {

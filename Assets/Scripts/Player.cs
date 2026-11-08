@@ -15,7 +15,6 @@ public class Player : MonoBehaviour
 
     [Header("Interacción")]
     [SerializeField] private float distanciaInteraccion = 2.5f;
-    [Tooltip("Cuantos grados a cada lado de la mirada cuenta como 'delante'")]
     [SerializeField] private float anguloInteraccion = 40f;
     
     // private float inputH;
@@ -62,64 +61,6 @@ public class Player : MonoBehaviour
         if (espejoSeleccionado != null)
         {
             espejoSeleccionado.Rotar();
-        }
-    }
-
-    // Busca el espejo mas cercano que este DELANTE del jugador.
-    // Los que estan detras o muy a los lados no cuentan.
-    private Espejo BuscarEspejoDelante()
-    {
-        Collider[] cercanos = Physics.OverlapSphere(transform.position, distanciaInteraccion);
-
-        Espejo mejorEspejo = null;
-        float distanciaMasCorta = 9999f;
-
-        foreach (Collider col in cercanos)
-        {
-            Espejo espejo = col.GetComponent<Espejo>();
-            if (espejo == null)
-            {
-                continue;
-            }
-
-            // direccion hacia el espejo sin tener en cuenta la altura
-            Vector3 haciaEspejo = espejo.transform.position - transform.position;
-            haciaEspejo.y = 0;
-
-            // angulo entre hacia donde mira el jugador y donde esta el espejo
-            float angulo = Vector3.Angle(transform.forward, haciaEspejo);
-            if (angulo > anguloInteraccion)
-            {
-                continue;
-            }
-
-            float distancia = haciaEspejo.magnitude;
-            if (distancia < distanciaMasCorta)
-            {
-                distanciaMasCorta = distancia;
-                mejorEspejo = espejo;
-            }
-        }
-
-        return mejorEspejo;
-    }
-
-    // Cambia el espejo resaltado si ahora tenemos otro delante
-    private void ActualizarEspejoSeleccionado()
-    {
-        Espejo nuevo = BuscarEspejoDelante();
-
-        if (nuevo != espejoSeleccionado)
-        {
-            if (espejoSeleccionado != null)
-            {
-                espejoSeleccionado.Resaltar(false);
-            }
-            if (nuevo != null)
-            {
-                nuevo.Resaltar(true);
-            }
-            espejoSeleccionado = nuevo;
         }
     }
     
@@ -176,12 +117,72 @@ public class Player : MonoBehaviour
         transform.rotation = rotacionObjetivo;
     }
 
+    // Busca el espejo mas cercano que este DELANTE del jugador.
+    // Los que estan detras o muy a los lados no cuentan.
+    private Espejo BuscarEspejoDelante()
+    {
+        Collider[] cercanos = Physics.OverlapSphere(transform.position, distanciaInteraccion);
+
+        Espejo mejorEspejo = null;
+        float distanciaMasCorta = 9999f;
+
+        foreach (Collider col in cercanos)
+        {
+            // InParent por si el collider esta en un hijo del prefab
+            Espejo espejo = col.GetComponentInParent<Espejo>();
+            if (espejo == null)
+            {
+                continue;
+            }
+
+            // direccion hacia el espejo sin tener en cuenta la altura
+            Vector3 haciaEspejo = espejo.transform.position - transform.position;
+            haciaEspejo.y = 0;
+
+            // angulo entre hacia donde mira el jugador y donde esta el espejo
+            float angulo = Vector3.Angle(transform.forward, haciaEspejo);
+            if (angulo > anguloInteraccion)
+            {
+                continue;
+            }
+
+            float distancia = haciaEspejo.magnitude;
+            if (distancia < distanciaMasCorta)
+            {
+                distanciaMasCorta = distancia;
+                mejorEspejo = espejo;
+            }
+        }
+
+        return mejorEspejo;
+    }
+
+    // Cambia el espejo resaltado si ahora tenemos otro delante
+    private void ActualizarEspejoSeleccionado()
+    {
+        Espejo nuevo = BuscarEspejoDelante();
+
+        if (nuevo != espejoSeleccionado)
+        {
+            if (espejoSeleccionado != null)
+            {
+                espejoSeleccionado.Resaltar(false);
+            }
+            if (nuevo != null)
+            {
+                nuevo.Resaltar(true);
+            }
+            espejoSeleccionado = nuevo;
+        }
+    }
+
     private void OnDrawGizmos()
     {
+        // esfera para ver colisiones entre los pies y el suelo
         Gizmos.color = Color.white;
         Gizmos.DrawSphere(pies.position, radioDeteccion);
 
-        // Rayos de ayuda para ver hasta donde llega la interaccion (solo se ven en el editor)
+        // rayos de ayuda para ver hasta donde llega la interaccion
         Vector3 origen = transform.position + Vector3.up * 1f;
 
         // rayo central: hacia donde mira el jugador, con la distancia de interaccion

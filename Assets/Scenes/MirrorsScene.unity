@@ -1350,7 +1350,7 @@ GameObject:
   - component: {fileID: 900000142}
   - component: {fileID: 900000141}
   m_Layer: 3
-  m_Name: Suelo Siguiente Sala
+  m_Name: SueloSiguienteSala
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1460,7 +1460,7 @@ GameObject:
   - component: {fileID: 900000501}
   - component: {fileID: 900000502}
   m_Layer: 0
-  m_Name: PuzleLuz
+  m_Name: GeneradorPuzleLuz
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1506,6 +1506,9 @@ MonoBehaviour:
   probabilidadGiro: 0.4
   probabilidadEnlace: 0.5
   intentosMaximos: 500
+  prefabEspejo: {fileID: 0}
+  prefabEmisor: {fileID: 0}
+  prefabReceptor: {fileID: 0}
   puerta: {fileID: 900000999}
 --- !u!114 &900000999
 MonoBehaviour:
