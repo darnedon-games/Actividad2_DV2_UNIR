@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     private Vector3 direccionMovimiento;
     private Vector3 direccionInput;
     private Vector3 velocidadVertical;
-    private Espejo espejoSeleccionado;
+    private Interactuable objetoSeleccionado;
 
     private void OnEnable()
     {
@@ -55,12 +55,14 @@ public class Player : MonoBehaviour
         }
     }
     
-    // Gira el espejo que tenemos delante (el que esta resaltado)
+    // Interactua con el objeto que tenemos delante (el que esta resaltado).
+    // El jugador no sabe si es un espejo, una palanca...: cada uno sabe lo que tiene que hacer.
     private void Interactuar()
     {
-        if (espejoSeleccionado != null)
+        if (objetoSeleccionado != null)
         {
-            espejoSeleccionado.Rotar();
+            // le pasamos nuestro transform por si necesita saber donde estamos
+            objetoSeleccionado.Interactuar(transform);
         }
     }
     
@@ -97,7 +99,7 @@ public class Player : MonoBehaviour
         }
 
         AplicarGravedad();
-        ActualizarEspejoSeleccionado();
+        ActualizarObjetoSeleccionado();
     }
 
     private void AplicarGravedad()
@@ -117,62 +119,62 @@ public class Player : MonoBehaviour
         transform.rotation = rotacionObjetivo;
     }
 
-    // Busca el espejo mas cercano que este DELANTE del jugador.
+    // Busca el objeto interactuable mas cercano que este DELANTE del jugador.
     // Los que estan detras o muy a los lados no cuentan.
-    private Espejo BuscarEspejoDelante()
+    private Interactuable BuscarInteractuableDelante()
     {
         Collider[] cercanos = Physics.OverlapSphere(transform.position, distanciaInteraccion);
 
-        Espejo mejorEspejo = null;
+        Interactuable mejorObjeto = null;
         float distanciaMasCorta = 9999f;
 
         foreach (Collider col in cercanos)
         {
             // InParent por si el collider esta en un hijo del prefab
-            Espejo espejo = col.GetComponentInParent<Espejo>();
-            if (espejo == null)
+            Interactuable objeto = col.GetComponentInParent<Interactuable>();
+            if (objeto == null)
             {
                 continue;
             }
 
-            // direccion hacia el espejo sin tener en cuenta la altura
-            Vector3 haciaEspejo = espejo.transform.position - transform.position;
-            haciaEspejo.y = 0;
+            // direccion hacia el objeto sin tener en cuenta la altura
+            Vector3 haciaObjeto = objeto.transform.position - transform.position;
+            haciaObjeto.y = 0;
 
-            // angulo entre hacia donde mira el jugador y donde esta el espejo
-            float angulo = Vector3.Angle(transform.forward, haciaEspejo);
+            // angulo entre hacia donde mira el jugador y donde esta el objeto
+            float angulo = Vector3.Angle(transform.forward, haciaObjeto);
             if (angulo > anguloInteraccion)
             {
                 continue;
             }
 
-            float distancia = haciaEspejo.magnitude;
+            float distancia = haciaObjeto.magnitude;
             if (distancia < distanciaMasCorta)
             {
                 distanciaMasCorta = distancia;
-                mejorEspejo = espejo;
+                mejorObjeto = objeto;
             }
         }
 
-        return mejorEspejo;
+        return mejorObjeto;
     }
 
-    // Cambia el espejo resaltado si ahora tenemos otro delante
-    private void ActualizarEspejoSeleccionado()
+    // Cambia el objeto resaltado si ahora tenemos otro delante
+    private void ActualizarObjetoSeleccionado()
     {
-        Espejo nuevo = BuscarEspejoDelante();
+        Interactuable nuevo = BuscarInteractuableDelante();
 
-        if (nuevo != espejoSeleccionado)
+        if (nuevo != objetoSeleccionado)
         {
-            if (espejoSeleccionado != null)
+            if (objetoSeleccionado != null)
             {
-                espejoSeleccionado.Resaltar(false);
+                objetoSeleccionado.Resaltar(false);
             }
             if (nuevo != null)
             {
                 nuevo.Resaltar(true);
             }
-            espejoSeleccionado = nuevo;
+            objetoSeleccionado = nuevo;
         }
     }
 
@@ -196,11 +198,11 @@ public class Player : MonoBehaviour
         Gizmos.DrawRay(origen, bordeIzquierdo * distanciaInteraccion);
         Gizmos.DrawRay(origen, bordeDerecho * distanciaInteraccion);
 
-        // linea verde hasta el espejo seleccionado
-        if (espejoSeleccionado != null)
+        // linea verde hasta el objeto seleccionado
+        if (objetoSeleccionado != null)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(origen, espejoSeleccionado.transform.position);
+            Gizmos.DrawLine(origen, objetoSeleccionado.transform.position);
         }
     }
 }

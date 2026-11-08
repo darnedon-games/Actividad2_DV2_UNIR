@@ -4,7 +4,7 @@ using UnityEngine;
 // y el generador abre la puerta (y lo que haya en "Al Resolver Puzle").
 public class Receptor : MonoBehaviour
 {
-    public GeneradorPuzle generador;
+    public GeneradorPuzleEspejos generador;
     public Color colorActivado = Color.green;
 
     private bool activado = false;

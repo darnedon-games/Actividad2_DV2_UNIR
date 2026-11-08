@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 // Genera el puzle de luz al cargar la escena.
 //
@@ -27,12 +28,13 @@ using UnityEngine;
 // Cuando el puzle es bueno, creamos los cubos de verdad.
 //
 // PARA USARLO EN OTRO PROYECTO:
-// - Copia la carpeta PuzleLuz.
+// - Copia las carpetas Comun y PuzleLuz.
 // - Crea un objeto vacio, ponlo SOBRE EL SUELO de la sala y añadele este script.
 // - Ajusta "Tamaño Zona" hasta que el recuadro cian quepa dentro de la sala.
-// - En tu jugador, al pulsar interactuar, llama a Rotar() del Espejo que tenga delante
-//   (mira Player.cs de este proyecto como ejemplo).
-public class GeneradorPuzle : MonoBehaviour
+// - En "Al Resolver" conecta lo que deba pasar al resolverlo (por ejemplo Puerta > Abrir).
+// - En tu jugador, al pulsar interactuar, llama a Interactuar() del Interactuable que tenga
+//   delante (mira Player.cs de este proyecto como ejemplo).
+public class GeneradorPuzleEspejos : MonoBehaviour
 {
     [Header("Zona del puzle")]
     [Tooltip("Ancho (X) y largo (Z) de la zona en metros. El objeto debe estar sobre el suelo y con escala 1.")]
@@ -70,7 +72,8 @@ public class GeneradorPuzle : MonoBehaviour
     [SerializeField] private GameObject prefabReceptor;
 
     [Header("Que pasa al resolverlo")]
-    [SerializeField] private Puerta puerta;
+    [Tooltip("Arrastra aqui lo que debe pasar al resolver el puzle. Por ejemplo: la puerta y elige Puerta > Abrir.")]
+    [SerializeField] private UnityEvent alResolver;
 
     private int columnas;
     private int filas;
@@ -152,10 +155,8 @@ public class GeneradorPuzle : MonoBehaviour
         }
         resuelto = true;
 
-        if (puerta != null)
-        {
-            puerta.Abrir();
-        }
+        // avisamos a todo lo que se haya conectado en el Inspector (abrir puerta, sonido...)
+        alResolver.Invoke();
     }
 
     // ---------------- CUADRICULA ----------------

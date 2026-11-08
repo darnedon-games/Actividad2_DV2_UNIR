@@ -4,7 +4,8 @@ using UnityEngine;
 // Cada vez que el jugador interactua con el, gira 45 grados.
 // Si tiene un espejo enlazado, ese tambien gira (pero girar el enlazado no gira necesariamente este).
 // Cuando el jugador lo tiene delante se resalta, y su enlazado se resalta con otro color.
-public class Espejo : MonoBehaviour
+// Hereda de Interactuable para que el jugador pueda usarlo sin saber que es un espejo.
+public class Espejo : Interactuable
 {
     private float gradosPorGiro = 45f;
     public Color colorResaltado = new Color(1f, 0.9f, 0.3f);
@@ -27,7 +28,14 @@ public class Espejo : MonoBehaviour
         }
     }
 
-    // Lo que pasa cuando el jugador interactua
+    // Lo que pasa cuando el jugador interactua: giramos el espejo
+    // (no necesitamos saber donde esta el jugador, asi que no usamos "jugador")
+    public override void Interactuar(Transform jugador)
+    {
+        Rotar();
+    }
+
+    // Gira este espejo y tambien su enlazado
     public void Rotar()
     {
         GirarSolo();
@@ -44,7 +52,7 @@ public class Espejo : MonoBehaviour
         transform.Rotate(0, gradosPorGiro, 0);
     }
 
-    public void Resaltar(bool activar)
+    public override void Resaltar(bool activar)
     {
         if (activar)
         {
