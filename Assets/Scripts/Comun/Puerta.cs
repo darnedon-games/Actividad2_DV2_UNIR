@@ -6,7 +6,6 @@ public class Puerta : MonoBehaviour
 {
     [SerializeField] private float alturaApertura = 3.2f;
     [SerializeField] private float velocidad = 2f;
-    [Tooltip("Desactivalo si tu puerta ya tiene su propio material")]
     [SerializeField] private bool pintarPuerta = true;
 
     private bool abierta = false;

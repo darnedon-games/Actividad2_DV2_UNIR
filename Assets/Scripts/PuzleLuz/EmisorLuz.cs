@@ -6,7 +6,6 @@ using UnityEngine;
 // El rayo se dibuja con un LineRenderer.
 public class EmisorLuz : MonoBehaviour
 {
-    [Tooltip("Altura sobre el pivote de la que sale el rayo. La pone el generador si usas un prefab.")]
     public float alturaSalida = 0f;
     public float distanciaMaxima = 50f;
     public int rebotesMaximos = 20;
@@ -14,7 +13,6 @@ public class EmisorLuz : MonoBehaviour
     [Header("Aspecto del rayo")]
     public float anchoRayo = 0.08f;
     public Color colorRayo = Color.red;
-    [Tooltip("Opcional. Si esta vacio se crea uno con el shader Sprites/Default")]
     public Material materialRayo;
 
     private LineRenderer linea;

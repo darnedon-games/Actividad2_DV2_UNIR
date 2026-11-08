@@ -37,42 +37,30 @@ using UnityEngine.Events;
 public class GeneradorPuzleEspejos : MonoBehaviour
 {
     [Header("Zona del puzle")]
-    [Tooltip("Ancho (X) y largo (Z) de la zona en metros. El objeto debe estar sobre el suelo y con escala 1.")]
     [SerializeField] private Vector2 tamanoZona = new Vector2(14f, 12f);
-    [Tooltip("Tamaño de cada celda. Mas grande que el jugador para que pueda pasar entre espejos.")]
     [SerializeField] private float tamanoCelda = 2f;
-    [Tooltip("Altura del rayo de luz sobre el suelo.")]
     [SerializeField] private float alturaRayo = 1f;
 
     [Header("Detección de obstáculos")]
-    [Tooltip("Qué capas cuentan como obstáculo. Por defecto todas.")]
     [SerializeField] private LayerMask capasObstaculos = ~0;
-    [Tooltip("Altura de la caja con la que se comprueba si una celda esta libre.")]
     [SerializeField] private float alturaComprobacion = 2f;
 
     [Header("Dificultad")]
-    [Tooltip("El puzle nunca se podra resolver con menos pulsaciones que estas. Como mucho puede ser 3 x espejos del camino.")]
     [SerializeField] private int pulsacionesMinimas = 6;
     [SerializeField] private int espejosMinimos = 3;
     [SerializeField] private int espejosMaximos = 5;
     [Range(0f, 1f)]
     [SerializeField] private float probabilidadGiro = 0.35f;
-    [Tooltip("Probabilidad de que cada espejo tenga otro enlazado que gira con el.")]
     [Range(0f, 1f)]
     [SerializeField] private float probabilidadEnlace = 0.5f;
     [SerializeField] private int intentosMaximos = 500;
 
     [Header("Prefabs (opcionales: si estan vacios se crean cubos)")]
-    [Tooltip("Pivote en el suelo. La cara que refleja mira hacia su eje Z (flecha azul). " +
-             "Necesita un collider plano que llegue a la altura del rayo y debe caber en una celda.")]
     [SerializeField] private GameObject prefabEspejo;
-    [Tooltip("Pivote en el suelo. Dispara hacia su eje Z (flecha azul). El rayo sale a la altura del rayo.")]
     [SerializeField] private GameObject prefabEmisor;
-    [Tooltip("Pivote en el suelo. Necesita un collider que llegue a la altura del rayo.")]
     [SerializeField] private GameObject prefabReceptor;
 
     [Header("Que pasa al resolverlo")]
-    [Tooltip("Arrastra aqui lo que debe pasar al resolver el puzle. Por ejemplo: la puerta y elige Puerta > Abrir.")]
     [SerializeField] private UnityEvent alResolver;
 
     private int columnas;

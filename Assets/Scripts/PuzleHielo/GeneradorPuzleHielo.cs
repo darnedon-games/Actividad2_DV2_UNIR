@@ -45,53 +45,34 @@ using UnityEngine.Events;
 public class GeneradorPuzleHielo : MonoBehaviour
 {
     [Header("Zona del puzle")]
-    [Tooltip("Ancho (X) y largo (Z) de la zona en metros. El objeto debe estar sobre el suelo y con escala 1.")]
     [SerializeField] private Vector2 tamanoZona = new Vector2(14f, 12f);
-    [Tooltip("Tamaño de cada celda. Celdas mas pequeñas = mas celdas = puzles mas largos. " +
-             "No la hagas mucho mas pequeña que el ancho del jugador o no cabra entre las rocas.")]
     [SerializeField] private float tamanoCelda = 1f;
-    [Tooltip("Puertas o entradas de la sala. La celda de la zona mas cercana a cada una " +
-             "nunca tendra rocas, ni el bloque, ni el interruptor.")]
     [SerializeField] private Transform[] accesos;
 
     [Header("Detección de obstáculos")]
-    [Tooltip("Qué capas cuentan como obstáculo. Por defecto todas.")]
     [SerializeField] private LayerMask capasObstaculos = ~0;
-    [Tooltip("Altura de la caja con la que se comprueba si una celda esta libre.")]
     [SerializeField] private float alturaComprobacion = 2f;
 
     [Header("Dificultad")]
-    [Tooltip("El puzle nunca se podra resolver con menos empujones que estos. " +
-             "Con una zona de 14x12 celdas, 8 sale enseguida y 10 tambien suele salir.")]
     [SerializeField] private int empujesMinimos = 8;
-    [Tooltip("El camino mas corto nunca tendra mas empujones que estos.")]
     [SerializeField] private int empujesMaximos = 15;
     [Range(0f, 0.4f)]
-    [Tooltip("Probabilidad de que cada celda libre tenga una roca.")]
     [SerializeField] private float probabilidadRoca = 0.15f;
-    [Tooltip("Intentos con cada numero de empujes minimos antes de probar con uno menos.")]
     [SerializeField] private int intentosMaximos = 2000;
 
     [Header("Si el bloque se atasca")]
-    [Tooltip("Segundos que espera el bloque atascado antes de volver a la salida.")]
     [SerializeField] private float segundosAntesDeReiniciar = 1f;
 
     [Header("Prefabs (opcionales: si estan vacios se crean cubos)")]
-    [Tooltip("Pivote en el suelo. Debe tener un collider y caber en una celda.")]
     [SerializeField] private GameObject prefabBloque;
-    [Tooltip("Pivote en el suelo. Debe tener un collider y caber en una celda.")]
     [SerializeField] private GameObject prefabRoca;
-    [Tooltip("Pivote en el suelo. Es solo decorativo: el generador sabe en que celda esta.")]
     [SerializeField] private GameObject prefabInterruptor;
-    [Tooltip("Tamaño de las rocas, del bloque y del interruptor comparado con la celda (0.8 = 80%).")]
     [Range(0.5f, 1f)]
     [SerializeField] private float tamanoPiezas = 0.8f;
-    [Tooltip("Pinta un suelo azul claro para que se vea bien donde esta el hielo.")]
     [SerializeField] private bool crearSueloHielo = true;
     [SerializeField] private Color colorInterruptorActivado = Color.green;
 
     [Header("Que pasa al resolverlo")]
-    [Tooltip("Arrastra aqui lo que debe pasar al resolver el puzle. Por ejemplo: la puerta y elige Puerta > Abrir.")]
     [SerializeField] private UnityEvent alResolver;
 
     private int columnas;
