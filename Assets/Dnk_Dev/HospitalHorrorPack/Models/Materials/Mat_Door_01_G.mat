@@ -28,6 +28,7 @@ Material:
   - _ALPHAPREMULTIPLY_ON
   - _EMISSION
   - _NORMALMAP
+  - _SPECULAR_SETUP
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 7
@@ -159,7 +160,7 @@ Material:
     - _Surface: 1
     - _UVSec: 0
     - _WindQuality: 0
-    - _WorkflowMode: 1
+    - _WorkflowMode: 0
     - _XRMotionVectorsPass: 1
     - _ZWrite: 0
     m_Colors:
