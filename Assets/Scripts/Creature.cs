@@ -18,31 +18,32 @@ public class Creature : MonoBehaviour
     private void Start()
     {
         Destroy(gameObject, tiempoDeVida);
+        posicionObjetivo = transform.position + (transform.right * 6f);
     }
 
-    private void Update() {
-
+    private void Update()
+    {
         direccionMovimiento = posicionObjetivo - transform.position;
         direccionMovimiento.y = 0;
 
-        if (direccionMovimiento.sqrMagnitude > 0)
+        // ¿hemos llegado? (cerca basta, no hace falta la posición exacta)
+        if (direccionMovimiento.sqrMagnitude < 0.01f)
         {
-            RotarHaciaDestino();
-        }
-
-        if (isWalking)
-        {
-            if (transform.position != posicionObjetivo)
-            {
-                StartWalking();
-                transform.position = Vector3.MoveTowards(transform.position, posicionObjetivo, velocidadMovimiento * Time.deltaTime);
-            }
-            else
+            if (isWalking)
             {
                 StopWalking();
-                Destroy(this.gameObject);
+                // Destroy
             }
+            return;
         }
+
+        if (isWalking == false)
+        {
+            StartWalking();   // solo una vez, no en cada frame
+        }
+
+        RotarHaciaDestino();
+        transform.position = Vector3.MoveTowards(transform.position, posicionObjetivo, velocidadMovimiento * Time.deltaTime);
     }
 
     public void StartWalking()
