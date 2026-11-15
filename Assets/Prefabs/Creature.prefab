@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 051c80010a7ae7f4aac04318bc504441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Creature
-  velocidadMovimiento: 6
+  velocidadMovimiento: 5
   posicionObjetivo: {x: 0, y: 0, z: 0}
 --- !u!95 &7871056308903943923
 Animator:

@@ -18,7 +18,7 @@ public class Creature : MonoBehaviour
     private void Start()
     {
         Destroy(gameObject, tiempoDeVida);
-        posicionObjetivo = transform.position + (transform.right * 6f);
+        posicionObjetivo = transform.position + (transform.right * 4f);
     }
 
     private void Update()
@@ -32,7 +32,7 @@ public class Creature : MonoBehaviour
             if (isWalking)
             {
                 StopWalking();
-                // Destroy
+                Destroy(gameObject);
             }
             return;
         }
