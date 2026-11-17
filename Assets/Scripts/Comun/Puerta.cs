@@ -12,6 +12,8 @@ public class Puerta : MonoBehaviour
     // grados por segundo
     [SerializeField] private float velocidadGiro = 90f;
 
+    [SerializeField] private SoundManager efectoSonido;
+
     private bool abierta = false;
     private Quaternion rotacionCerrada;
     private Quaternion rotacionAbierta;
@@ -35,6 +37,7 @@ public class Puerta : MonoBehaviour
         if (abierta == false)
         {
             abierta = true;
+            efectoSonido.ReproducirSonidoPuerta();
             Debug.Log("Puerta abierta!");
         }
     }
