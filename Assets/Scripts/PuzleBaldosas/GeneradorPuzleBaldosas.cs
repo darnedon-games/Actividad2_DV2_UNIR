@@ -9,6 +9,7 @@ using UnityEngine.Events;
 // pisa una baldosa, cambia: si estaba apagada se enciende y si estaba encendida se apaga.
 // Hay que encenderlas todas, así que lo ideal es pasar por cada baldosa UNA sola vez.
 // Si el jugador se equivoca, vuelve a pasar por encima para apagarla.
+// Junto a la entrada hay un interruptor que apaga todas las baldosas para volver a empezar.
 // Cuando todas están encendidas, se abre la puerta.
 //
 // CÓMO FUNCIONA:
@@ -36,6 +37,8 @@ using UnityEngine.Events;
 // - Ajusta el número y el tamaño de las baldosas hasta que el recuadro cian quepa en la sala.
 // - Arrastra la puerta de entrada a "Entrada" (el camino empieza en la baldosa más cercana),
 //   la de salida a "Salida" (esa baldosa nunca tendrá roca) y el jugador a "Jugador".
+// - El interruptor de reinicio se pone solo junto a la entrada. Si quieres elegir el sitio,
+//   crea un objeto vacío donde lo quieras y arrástralo a "Lugar Interruptor".
 // - En "Al Resolver" conecta lo que deba pasar al resolverlo (por ejemplo Puerta > Abrir).
 public class GeneradorPuzleBaldosas : MonoBehaviour
 {
@@ -47,6 +50,9 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
     [SerializeField] private Transform salida;
     // si está vacío se busca el objeto con la etiqueta "Player"
     [SerializeField] private Transform jugador;
+    // dónde va el interruptor que apaga todas las baldosas.
+    // Si está vacío se pone dentro de la sala, al lado de la entrada.
+    [SerializeField] private Transform lugarInterruptor;
 
     [Header("Detección de obstáculos")]
     [SerializeField] private LayerMask capasObstaculos = ~0;
@@ -68,6 +74,8 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
     // si están vacíos se crean cubos. Pivote en el suelo y que quepan en una baldosa.
     [SerializeField] private GameObject prefabBaldosa;
     [SerializeField] private GameObject prefabRoca;
+    // el prefab del interruptor necesita un collider para que el jugador lo detecte
+    [SerializeField] private GameObject prefabInterruptor;
 
     [Header("Al resolver")]
     [SerializeField] private UnityEvent alResolver;
@@ -199,6 +207,35 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
         {
             PuzleResuelto();
         }
+    }
+
+    // Lo llama el interruptor: apaga todas las baldosas para volver a empezar
+    public void Reiniciar()
+    {
+        if (resuelto || baldosas == null)
+        {
+            return;
+        }
+
+        for (int col = 0; col < columnas; col++)
+        {
+            for (int fila = 0; fila < filas; fila++)
+            {
+                if (baldosas[col, fila] != null)
+                {
+                    baldosas[col, fila].Apagar();
+                }
+            }
+        }
+        encendidas = 0;
+
+        // la baldosa en la que esté el jugador ahora no cuenta como pisada:
+        // solo cambiará cuando salga de ella y vuelva a entrar
+        if (jugador != null)
+        {
+            celdaAnteriorJugador = CeldaDePosicion(jugador.position);
+        }
+        Debug.Log("Puzle de baldosas reiniciado");
     }
 
     private void PuzleResuelto()
@@ -602,6 +639,74 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
                 }
             }
         }
+
+        CrearInterruptor();
+    }
+
+    private void CrearInterruptor()
+    {
+        Vector3 posicion;
+        Quaternion rotacion;
+
+        if (lugarInterruptor != null)
+        {
+            posicion = lugarInterruptor.position;
+            rotacion = lugarInterruptor.rotation;
+        }
+        else if (entrada != null)
+        {
+            // desde la entrada, un poco hacia dentro de la sala y a un lado de la puerta
+            Vector3 haciaDentro = PosicionCelda(celdaEntrada) - entrada.position;
+            haciaDentro = Vector3.ProjectOnPlane(haciaDentro, transform.up).normalized;
+            Vector3 aUnLado = Vector3.Cross(transform.up, haciaDentro);
+
+            posicion = entrada.position + haciaDentro * 0.6f + aUnLado * 1.2f;
+            // mirando hacia la puerta, que es por donde llega el jugador
+            rotacion = Quaternion.LookRotation(-haciaDentro, transform.up);
+        }
+        else
+        {
+            // sin entrada, fuera de la zona, al lado de la baldosa donde empieza el camino
+            posicion = PosicionCelda(celdaEntrada) - transform.right * tamanoBaldosa;
+            rotacion = transform.rotation;
+        }
+
+        GameObject objeto;
+        if (prefabInterruptor != null)
+        {
+            objeto = Instantiate(prefabInterruptor, posicion, rotacion, transform);
+            objeto.name = "Interruptor reinicio";
+        }
+        else
+        {
+            // un objeto vacío con un poste y un botón rojo encima
+            objeto = new GameObject("Interruptor reinicio");
+            objeto.transform.SetParent(transform);
+            objeto.transform.position = posicion;
+            objeto.transform.rotation = rotacion;
+
+            CrearCuboHijo("Poste", objeto.transform, 0.55f, new Vector3(0.3f, 1.1f, 0.3f), new Color(0.4f, 0.4f, 0.45f));
+            CrearCuboHijo("Boton", objeto.transform, 1.15f, new Vector3(0.22f, 0.1f, 0.22f), new Color(0.8f, 0.1f, 0.1f));
+        }
+
+        InterruptorReinicio interruptor = objeto.GetComponent<InterruptorReinicio>();
+        if (interruptor == null)
+        {
+            interruptor = objeto.AddComponent<InterruptorReinicio>();
+        }
+        interruptor.generador = this;
+    }
+
+    // Crea un cubo dentro de "padre", con su centro a la altura indicada
+    private void CrearCuboHijo(string nombre, Transform padre, float alturaCentro, Vector3 escala, Color color)
+    {
+        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cubo.name = nombre;
+        cubo.transform.SetParent(padre);
+        cubo.transform.position = padre.position + padre.up * alturaCentro;
+        cubo.transform.rotation = padre.rotation;
+        cubo.transform.localScale = escala;
+        cubo.GetComponent<Renderer>().material.color = color;
     }
 
     private Baldosa CrearBaldosa(Vector2Int celda)

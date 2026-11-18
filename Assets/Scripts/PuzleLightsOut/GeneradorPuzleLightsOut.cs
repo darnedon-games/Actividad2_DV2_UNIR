@@ -47,12 +47,18 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
     [Header("Colores")]
     [SerializeField] private Color colorApagada = new Color(0.15f, 0.15f, 0.2f);
     [SerializeField] private Color colorEncendida = new Color(1f, 0.85f, 0.2f);
+    // color normal del pilar (solo sin prefab: con prefab se queda el color de su material)
     [SerializeField] private Color colorPilar = new Color(0.5f, 0.5f, 0.55f);
+    // colores con los que BRILLA el pilar al resaltarlo
     [SerializeField] private Color colorResaltado = new Color(0.3f, 0.8f, 1f);
     [SerializeField] private Color colorVecinas = new Color(0.2f, 0.45f, 0.6f);
+    // cuánto brilla el pilar resaltado: 0 = nada, 1 = mucho
+    [SerializeField] private float brilloResaltado = 0.25f;
 
     [Header("Prefabs (opcionales)")]
     // si está vacío se crea un pilar con un cubo encima. Pivote en el suelo.
+    // Si el prefab tiene una luz (Light) dentro, aunque esté desactivada, el puzle
+    // la enciende y la apaga en lugar de cambiar colores.
     [SerializeField] private GameObject prefabLampara;
 
     [Header("Al resolver")]
@@ -162,16 +168,30 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
                 continue;
             }
 
-            Color color = colorPilar;
-            if (activar && vecina == celda)
+            if (activar == false)
+            {
+                QuitarResaltado(vecina);
+                continue;
+            }
+
+            Color color = colorVecinas;
+            if (vecina == celda)
             {
                 color = colorResaltado;
             }
-            else if (activar)
-            {
-                color = colorVecinas;
-            }
-            lamparas[vecina.x, vecina.y].PintarPilar(color);
+            lamparas[vecina.x, vecina.y].IluminarPilar(color * brilloResaltado);
+        }
+    }
+
+    private void QuitarResaltado(Vector2Int celda)
+    {
+        // el pilar deja de brillar y vuelve a como era su material
+        lamparas[celda.x, celda.y].RestaurarPilar();
+
+        // los cubos que se crean sin prefab, además, se pintan del gris de "Color Pilar"
+        if (prefabLampara == null)
+        {
+            lamparas[celda.x, celda.y].PintarPilar(colorPilar);
         }
     }
 
@@ -333,7 +353,7 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
             {
                 Vector2Int celda = new Vector2Int(col, fila);
                 lamparas[col, fila] = CrearLampara(celda);
-                lamparas[col, fila].PintarPilar(colorPilar);
+                QuitarResaltado(celda);
                 PintarLuz(celda);
             }
         }
@@ -376,6 +396,7 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
         }
         lampara.generador = this;
         lampara.celda = celda;
+        lampara.GuardarAspectoPilar();
         return lampara;
     }
 
@@ -398,13 +419,23 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
             return;
         }
 
+        Lampara lampara = lamparas[celda.x, celda.y];
+
+        // si el prefab trae una luz de verdad (Light), la encendemos o apagamos
+        if (lampara.TieneBombilla())
+        {
+            lampara.EncenderBombilla(encendida[celda.x, celda.y]);
+            return;
+        }
+
+        // si no, cambiamos el color, como con los cubos que se crean sin prefab
         if (encendida[celda.x, celda.y])
         {
-            lamparas[celda.x, celda.y].PintarLuz(colorEncendida);
+            lampara.PintarLuz(colorEncendida);
         }
         else
         {
-            lamparas[celda.x, celda.y].PintarLuz(colorApagada);
+            lampara.PintarLuz(colorApagada);
         }
     }
 
