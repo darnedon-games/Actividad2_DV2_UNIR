@@ -741,7 +741,7 @@ public class GeneradorPuzleEspejos : MonoBehaviour
     // Crea un cubo con su centro a la altura del rayo
     private GameObject CrearCubo(string nombre, Vector3 posicionSuelo, Quaternion rotacion, Vector3 escala, Color color)
     {
-        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject cubo = CuboBasico.Crear();
         cubo.name = nombre;
         cubo.transform.SetParent(transform);
         cubo.transform.position = posicionSuelo + transform.up * alturaRayo;

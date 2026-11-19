@@ -700,7 +700,7 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
     // Crea un cubo dentro de "padre", con su centro a la altura indicada
     private void CrearCuboHijo(string nombre, Transform padre, float alturaCentro, Vector3 escala, Color color)
     {
-        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject cubo = CuboBasico.Crear();
         cubo.name = nombre;
         cubo.transform.SetParent(padre);
         cubo.transform.position = padre.position + padre.up * alturaCentro;
@@ -743,7 +743,7 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
             return pieza;
         }
 
-        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject cubo = CuboBasico.Crear();
         cubo.name = nombre;
         cubo.transform.SetParent(transform);
         // el centro del cubo está a media altura, así su base queda en el suelo

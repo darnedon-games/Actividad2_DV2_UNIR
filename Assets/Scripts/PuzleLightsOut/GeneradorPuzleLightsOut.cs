@@ -403,7 +403,7 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
     // Crea un cubo dentro de "padre", con su centro a la altura indicada
     private Renderer CrearCubo(string nombre, Transform padre, float alturaCentro, Vector3 escala)
     {
-        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject cubo = CuboBasico.Crear();
         cubo.name = nombre;
         cubo.transform.SetParent(padre);
         cubo.transform.position = padre.position + transform.up * alturaCentro;

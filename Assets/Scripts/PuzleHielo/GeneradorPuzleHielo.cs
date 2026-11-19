@@ -628,7 +628,7 @@ public class GeneradorPuzleHielo : MonoBehaviour
         // suelo de hielo: solo decorativo, sin collider
         if (crearSueloHielo)
         {
-            GameObject suelo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            GameObject suelo = CuboBasico.Crear();
             suelo.name = "Suelo de hielo";
             Destroy(suelo.GetComponent<Collider>());
             suelo.transform.SetParent(transform);
@@ -687,7 +687,7 @@ public class GeneradorPuzleHielo : MonoBehaviour
             return pieza;
         }
 
-        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject cubo = CuboBasico.Crear();
         cubo.name = nombre;
         cubo.transform.SetParent(transform);
         // el centro del cubo esta a media altura, asi su base queda en el suelo
