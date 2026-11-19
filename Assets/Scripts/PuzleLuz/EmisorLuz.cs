@@ -3,7 +3,9 @@ using UnityEngine;
 
 // Lanza un rayo de luz hacia delante (eje Z del objeto).
 // Si choca con un espejo, el rayo rebota. Si llega al receptor, lo activa.
-// El rayo se dibuja con un LineRenderer.
+// El rayo se dibuja con un LineRenderer y brilla (con el Bloom del postprocesado).
+// Además pone una luz pequeña en cada espejo donde rebota y donde termina,
+// para que el rayo ilumine lo que tiene alrededor.
 public class EmisorLuz : MonoBehaviour
 {
     public float alturaSalida = 0f;
@@ -12,10 +14,21 @@ public class EmisorLuz : MonoBehaviour
 
     [Header("Aspecto del rayo")]
     public float anchoRayo = 0.08f;
-    public Color colorRayo = Color.red;
+    public Color colorRayo = Color.white;
+    // cuánto brilla el rayo: 1 = color normal; más de 1 hace que el Bloom le dé un halo
+    public float brilloRayo = 3f;
+    // si lo dejas vacío se crea uno; si pones el tuyo, el brillo depende de tu material
     public Material materialRayo;
 
+    [Header("Luces del rayo")]
+    public bool lucesEnImpactos = true;
+    public float intensidadLuces = 2f;
+    public float alcanceLuces = 2.5f;
+
     private LineRenderer linea;
+
+    // las luces se crean una vez y se reutilizan (se activan solo las que hacen falta)
+    private List<Light> luces = new List<Light>();
 
     void Start()
     {
@@ -35,6 +48,8 @@ public class EmisorLuz : MonoBehaviour
         else
         {
             linea.material = new Material(Shader.Find("Sprites/Default"));
+            // un color "más blanco que el blanco" (valores mayores que 1): así el Bloom lo hace brillar
+            linea.material.color = new Color(brilloRayo, brilloRayo, brilloRayo, 1f);
         }
         linea.startColor = colorRayo;
         linea.endColor = colorRayo;
@@ -43,6 +58,8 @@ public class EmisorLuz : MonoBehaviour
     void Update()
     {
         List<Vector3> puntos = new List<Vector3>();
+        // dónde ponemos una luz: en cada espejo y donde termina el rayo
+        List<Vector3> impactos = new List<Vector3>();
 
         // un rayo que empieza dentro de un collider no choca con el,
         // asi que podemos salir desde dentro del propio emisor
@@ -72,19 +89,22 @@ public class EmisorLuz : MonoBehaviour
                     Vector3 centroEspejo = espejo.transform.position;
                     centroEspejo.y = hit.point.y;
                     puntos[puntos.Count - 1] = centroEspejo;
+                    impactos.Add(centroEspejo);
 
                     // (un rayo que empieza dentro de un collider no choca con el,
                     // asi que no choca con el propio espejo al salir)
                     origen = centroEspejo + direccion * 0.01f;
                 }
-                else if (receptor != null)
-                {
-                    receptor.Activar();
-                    break;
-                }
                 else
                 {
-                    // ha chocado con una pared, el jugador u otra cosa
+                    // ha chocado con el receptor, una pared, el jugador u otra cosa:
+                    // la luz va un poco por delante del punto de choque para no quedar dentro
+                    impactos.Add(hit.point - direccion * 0.15f);
+
+                    if (receptor != null)
+                    {
+                        receptor.Activar();
+                    }
                     break;
                 }
             }
@@ -98,5 +118,51 @@ public class EmisorLuz : MonoBehaviour
 
         linea.positionCount = puntos.Count;
         linea.SetPositions(puntos.ToArray());
+
+        ColocarLuces(impactos);
+    }
+
+    // Pone una luz en cada punto y apaga las que sobran
+    private void ColocarLuces(List<Vector3> posiciones)
+    {
+        int necesarias = 0;
+        if (lucesEnImpactos)
+        {
+            necesarias = posiciones.Count;
+        }
+
+        // si faltan luces, creamos las que hagan falta
+        while (luces.Count < necesarias)
+        {
+            luces.Add(CrearLuz(luces.Count));
+        }
+
+        for (int i = 0; i < luces.Count; i++)
+        {
+            if (i < necesarias)
+            {
+                luces[i].transform.position = posiciones[i];
+                luces[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                luces[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private Light CrearLuz(int numero)
+    {
+        GameObject objeto = new GameObject("Luz del rayo " + numero);
+        objeto.transform.SetParent(transform);
+
+        Light luz = objeto.AddComponent<Light>();
+        luz.type = LightType.Point;
+        luz.color = colorRayo;
+        luz.intensity = intensidadLuces;
+        luz.range = alcanceLuces;
+        // sin sombras: así varias luces apenas cuestan rendimiento
+        luz.shadows = LightShadows.None;
+        return luz;
     }
 }

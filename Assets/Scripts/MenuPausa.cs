@@ -95,6 +95,9 @@ public class MenuPausa : MonoBehaviour
             Cursor.visible = cursorAntes != CursorLockMode.Locked;
         }
 
+        // pausa (o reanuda) todos los sonidos que estén sonando
+        AudioListener.pause = congelar;
+
         inputManager.ActivarControles(congelar == false);
         foreach (Behaviour componente in desactivarEnPausa)
         {
@@ -105,11 +108,12 @@ public class MenuPausa : MonoBehaviour
         }
     }
 
-    // Antes de cambiar de escena dejamos el tiempo y los controles como estaban,
-    // porque el tiempo y el InputManager no se reinician solos al cargar otra escena.
+    // Antes de cambiar de escena dejamos el tiempo, el sonido y los controles como estaban,
+    // porque no se reinician solos al cargar otra escena.
     public void CargarEscena(string nombre)
     {
         Time.timeScale = 1f;
+        AudioListener.pause = false;
         inputManager.ActivarControles(true);
         SceneManager.LoadScene(nombre);
     }

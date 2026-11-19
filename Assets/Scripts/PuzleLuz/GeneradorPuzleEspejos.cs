@@ -16,13 +16,16 @@ using UnityEngine.Events;
 //    que el emisor y que este lejos de el. Ahi ponemos el receptor.
 // 4. Enlazamos algunos espejos: al girar uno, tambien gira su enlazado (pero no al reves).
 //    Un espejo solo se enlaza con otro que este MAS ADELANTE en el camino del rayo.
+//    Despues ponemos algunos espejos FALSOS para despistar: van en celdas libres por las
+//    que no pasa el camino (ni en el borde de la zona, para no tapar las puertas),
+//    giran como los demas y no estan enlazados. Con el puzle resuelto el rayo no los toca.
 // 5. Desordenamos. Primero decidimos cuantas veces tendra que pulsar el jugador
 //    cada espejo (de 1 a 3) de forma que sumen al menos "Pulsaciones Minimas".
 //    Despues hacemos esas pulsaciones "al revés" desde la solución.
 //    Como los enlaces solo van hacia delante, cada espejo tiene una unica forma de
 //    quedar bien, asi que el jugador necesitara EXACTAMENTE esas pulsaciones.
 // 6. Por seguridad simulamos el rayo y comprobamos que no haya un atajo por otro
-//    camino (con pocos espejos casi nunca pasa y la comprobacion es muy rapida).
+//    camino, tambien girando los espejos falsos. Si lo hay, probamos otra vez.
 //
 // Todo esto se hace primero solo con numeros (sin crear objetos).
 // Cuando el puzle es bueno, creamos los cubos de verdad.
@@ -33,6 +36,10 @@ public class GeneradorPuzleEspejos : MonoBehaviour
     [SerializeField] private Vector2 tamanoZona = new Vector2(14f, 12f);
     [SerializeField] private float tamanoCelda = 2f;
     [SerializeField] private float alturaRayo = 1f;
+    // por donde entra el jugador (por ejemplo, la puerta de entrada).
+    // Sirve para saber que es una "fila": la linea que va de izquierda a derecha segun se entra.
+    // Si esta vacio, las filas van a lo ancho de la zona (de izquierda a derecha del recuadro cian).
+    [SerializeField] private Transform entrada;
 
     [Header("Detección de obstáculos")]
     [SerializeField] private LayerMask capasObstaculos = ~0;
@@ -42,6 +49,10 @@ public class GeneradorPuzleEspejos : MonoBehaviour
     [SerializeField] private int pulsacionesMinimas = 6;
     [SerializeField] private int espejosMinimos = 3;
     [SerializeField] private int espejosMaximos = 5;
+    // espejos que no forman parte de la solucion, solo para despistar
+    [SerializeField] private int espejosFalsos = 3;
+    // como mucho cuantos espejos (verdaderos y falsos) puede haber en una misma fila. 0 = sin limite
+    [SerializeField] private int espejosMaximosPorFila = 2;
     [Range(0f, 1f)]
     [SerializeField] private float probabilidadGiro = 0.35f;
     [Range(0f, 1f)]
@@ -67,7 +78,8 @@ public class GeneradorPuzleEspejos : MonoBehaviour
     private Vector2Int direccionEmisor;
     private Vector2Int celdaReceptor;
 
-    // datos de los espejos, en el orden en que los recorre el rayo
+    // datos de los espejos, en el orden en que los recorre el rayo.
+    // Los falsos van al final de las listas, detras de los verdaderos.
     // el giro de un espejo va de 0 a 3, en pasos de 45 grados:
     //   0 = de frente (como el generador)   1 = 45 grados   2 = 90 grados   3 = 135 grados
     //   (180 grados es igual que 0 porque el espejo refleja por las dos caras)
@@ -75,6 +87,8 @@ public class GeneradorPuzleEspejos : MonoBehaviour
     private List<int> girosEspejos = new List<int>();
     private List<int> enlacesEspejos = new List<int>();   // indice del enlazado, o -1 si no tiene
     private int[,] espejoEnCelda;                          // indice del espejo en cada celda, o -1
+    private int espejosVerdaderos;                         // cuantos espejos son del camino (el resto son falsos)
+    private bool filasPorColumnas = false;                 // true si una fila son las celdas de una misma columna
 
     // los 4 lados de la zona
     private const int IZQUIERDA = 0;
@@ -94,6 +108,7 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         }
 
         BuscarCeldasBloqueadas();
+        DecidirFilas();
 
         bool puzleCreado = false;
         for (int i = 0; i < intentosMaximos; i++)
@@ -108,6 +123,7 @@ public class GeneradorPuzleEspejos : MonoBehaviour
             }
 
             PrepararEspejos();
+            ColocarEspejosFalsos();
 
             if (Desordenar())
             {
@@ -211,6 +227,54 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         return true;
     }
 
+    // ---------------- FILAS ----------------
+
+    // Una fila es la linea que va de izquierda a derecha segun entra el jugador.
+    // Si el jugador entra andando a lo largo de las columnas (eje X de la zona),
+    // cada fila son las celdas de una misma columna; si no, las de una misma fila de la cuadricula.
+    private void DecidirFilas()
+    {
+        filasPorColumnas = false;
+        if (entrada == null)
+        {
+            return;
+        }
+        // hacia donde anda el jugador al entrar: desde la entrada hacia el centro de la zona
+        Vector3 haciaDentro = transform.position - entrada.position;
+        float x = Vector3.Dot(haciaDentro, transform.right);
+        float z = Vector3.Dot(haciaDentro, transform.forward);
+        filasPorColumnas = Mathf.Abs(x) > Mathf.Abs(z);
+    }
+
+    // El numero de fila de una celda
+    private int FilaDe(Vector2Int celda)
+    {
+        if (filasPorColumnas)
+        {
+            return celda.x;
+        }
+        return celda.y;
+    }
+
+    // Comprueba si en la fila de esta celda cabe otro espejo
+    private bool CabeEspejoEnFila(Vector2Int celda)
+    {
+        if (espejosMaximosPorFila <= 0)
+        {
+            return true;
+        }
+
+        int enLaFila = 0;
+        foreach (Vector2Int otra in celdasEspejos)
+        {
+            if (FilaDe(otra) == FilaDe(celda))
+            {
+                enLaFila++;
+            }
+        }
+        return enLaFila < espejosMaximosPorFila;
+    }
+
     // ---------------- CAMINO ----------------
 
     private bool IntentarCrearCamino(bool exigirDistancia)
@@ -255,7 +319,7 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         for (int paso = 0; paso < columnas * filas; paso++)
         {
             // no giramos en la celda del emisor ni nada mas girar
-            if (pasosDesdeUltimoGiro > 0 && celdasEspejos.Count < espejosMaximos)
+            if (pasosDesdeUltimoGiro > 0 && celdasEspejos.Count < espejosMaximos && CabeEspejoEnFila(actual))
             {
                 bool delanteLibre = PuedoPasar(actual + direccion);
 
@@ -394,6 +458,47 @@ public class GeneradorPuzleEspejos : MonoBehaviour
             }
             enlacesEspejos.Add(enlace);
         }
+
+        espejosVerdaderos = celdasEspejos.Count;
+    }
+
+    // Pone los espejos falsos en celdas libres por las que no pasa el camino.
+    // No van en el borde de la zona para no tapar el paso a las puertas.
+    private void ColocarEspejosFalsos()
+    {
+        List<Vector2Int> candidatas = new List<Vector2Int>();
+        for (int col = 1; col < columnas - 1; col++)
+        {
+            for (int fila = 1; fila < filas - 1; fila++)
+            {
+                // celdaUsada marca todas las celdas del camino: emisor, espejos, receptor y las de en medio
+                if (celdaBloqueada[col, fila] == false && celdaUsada[col, fila] == false)
+                {
+                    candidatas.Add(new Vector2Int(col, fila));
+                }
+            }
+        }
+
+        // cogemos celdas al azar hasta tener los falsos que se piden (o hasta que no queden)
+        int colocados = 0;
+        while (colocados < espejosFalsos && candidatas.Count > 0)
+        {
+            int elegida = Random.Range(0, candidatas.Count);
+            Vector2Int celda = candidatas[elegida];
+            candidatas.RemoveAt(elegida);
+
+            // si su fila ya esta llena, probamos con otra celda
+            if (CabeEspejoEnFila(celda) == false)
+            {
+                continue;
+            }
+            colocados++;
+
+            celdasEspejos.Add(celda);
+            girosEspejos.Add(Random.Range(0, 4));   // orientacion al azar
+            enlacesEspejos.Add(-1);                 // sin enlace
+            espejoEnCelda[celda.x, celda.y] = celdasEspejos.Count - 1;
+        }
     }
 
     // ---------------- DESORDENAR ----------------
@@ -401,7 +506,8 @@ public class GeneradorPuzleEspejos : MonoBehaviour
     // Devuelve false si con este camino no se puede (entonces probaremos con otro camino).
     private bool Desordenar()
     {
-        int numeroEspejos = girosEspejos.Count;
+        // solo se desordenan los espejos del camino: los falsos ya tienen una orientacion al azar
+        int numeroEspejos = espejosVerdaderos;
 
         // cada espejo se puede pulsar como mucho 3 veces (4 veces es dar la vuelta entera)
         if (numeroEspejos * 3 < pulsacionesMinimas)
@@ -444,10 +550,11 @@ public class GeneradorPuzleEspejos : MonoBehaviour
             }
 
             // 3. por seguridad, comprobamos que no haya un atajo por otro camino del rayo
+            //    (BuscarSolucion prueba a girar todos los espejos, tambien los falsos)
             bool hayAtajo = BuscarSolucion(giros, pulsacionesMinimas - 1, 0);
             if (hayAtajo == false)
             {
-                for (int i = 0; i < numeroEspejos; i++)
+                for (int i = 0; i < giros.Length; i++)
                 {
                     girosEspejos[i] = giros[i];
                 }

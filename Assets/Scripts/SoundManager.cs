@@ -5,6 +5,7 @@ public class SoundManager : MonoBehaviour
     private AudioSource efectos;
     [SerializeField] AudioClip sonidoAparicion;
     [SerializeField] AudioClip sonidoPuerta;
+    [SerializeField] AudioClip sonidoLlanto;
 
     void Start()
     {
@@ -19,5 +20,10 @@ public class SoundManager : MonoBehaviour
     public void ReproducirSonidoPuerta()
     {
         efectos.PlayOneShot(sonidoPuerta);
+    }
+
+    public void ReproducirSonidoLlanto()
+    {
+        efectos.PlayOneShot(sonidoLlanto);
     }
 }
