@@ -29,6 +29,19 @@ public class InputManagerSO : ScriptableObject
         misControles.Gameplay.Disable();
     }
 
+    // Enciende o apaga los controles del jugador (por ejemplo, mientras hay un menú abierto)
+    public void ActivarControles(bool activar)
+    {
+        if (activar)
+        {
+            misControles.Gameplay.Enable();
+        }
+        else
+        {
+            misControles.Gameplay.Disable();
+        }
+    }
+
     private void Mover(InputAction.CallbackContext ctx)
     {
         OnMover?.Invoke(ctx.ReadValue<Vector2>());
