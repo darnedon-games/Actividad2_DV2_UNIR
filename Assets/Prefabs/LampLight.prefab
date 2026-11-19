@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1797167633296351591}
   - component: {fileID: 5182736409182736451}
+  - component: {fileID: 6402917355128844071}
   m_Layer: 0
   m_Name: LampLight
   m_TagString: Untagged
@@ -35,6 +36,27 @@ Transform:
   - {fileID: 8289783890824990930}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6402917355128844071
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3049121081059972667}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.31, y: 1.6, z: 0.38}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &5182736409182736451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,37 +272,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfb03745dfcc9e542afbf1324e456609, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2222099397868801506}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cfb03745dfcc9e542afbf1324e456609, type: 3}
 --- !u!1 &7274399184377910361 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: cfb03745dfcc9e542afbf1324e456609, type: 3}
   m_PrefabInstance: {fileID: 7508259609861269768}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &2222099397868801506
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7274399184377910361}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.5539228, y: 0.9760746, z: 0.54177856}
-  m_Center: {x: -0.0030822605, y: 0.4880373, z: 0.0031237453}
 --- !u!4 &8050196603867025123 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: cfb03745dfcc9e542afbf1324e456609, type: 3}
@@ -350,7 +348,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 64346551896566378, guid: eeefdd9044a28504abd5e39c9e8fe5d0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
