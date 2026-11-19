@@ -26,7 +26,6 @@ public class Espejo : Interactuable
     private List<Color> emisionOriginal = new List<Color>();
     private List<Texture> mapaEmisionOriginal = new List<Texture>();
 
-    // Awake se ejecuta justo al añadir el script (el generador ya ha creado el modelo)
     void Awake()
     {
         // InChildren por si es un prefab con el modelo en objetos hijos

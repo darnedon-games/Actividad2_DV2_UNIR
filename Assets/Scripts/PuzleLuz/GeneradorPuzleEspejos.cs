@@ -156,8 +156,6 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         alResolver.Invoke();
     }
 
-    // ---------------- CUADRICULA ----------------
-
     private void CalcularCuadricula()
     {
         columnas = Mathf.FloorToInt(tamanoZona.x / tamanoCelda);
@@ -227,8 +225,6 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         return true;
     }
 
-    // ---------------- FILAS ----------------
-
     // Una fila es la linea que va de izquierda a derecha segun entra el jugador.
     // Si el jugador entra andando a lo largo de las columnas (eje X de la zona),
     // cada fila son las celdas de una misma columna; si no, las de una misma fila de la cuadricula.
@@ -274,8 +270,6 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         }
         return enLaFila < espejosMaximosPorFila;
     }
-
-    // ---------------- CAMINO ----------------
 
     private bool IntentarCrearCamino(bool exigirDistancia)
     {
@@ -427,8 +421,6 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         return Vector2Int.zero;
     }
 
-    // ---------------- ENLACES (solo datos) ----------------
-
     private void PrepararEspejos()
     {
         // apuntamos que espejo hay en cada celda para la simulacion del rayo
@@ -501,8 +493,6 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         }
     }
 
-    // ---------------- DESORDENAR ----------------
-
     // Devuelve false si con este camino no se puede (entonces probaremos con otro camino).
     private bool Desordenar()
     {
@@ -558,7 +548,7 @@ public class GeneradorPuzleEspejos : MonoBehaviour
                 {
                     girosEspejos[i] = giros[i];
                 }
-                //Debug.Log("Puzle de luz: " + numeroEspejos + " espejos, se resuelve con " + total + " pulsaciones");
+                Debug.Log("Puzle de luz: " + numeroEspejos + " espejos, se resuelve con " + total + " pulsaciones");
                 return true;
             }
         }
@@ -658,8 +648,6 @@ public class GeneradorPuzleEspejos : MonoBehaviour
         }
         return false;
     }
-
-    // ---------------- CREAR OBJETOS ----------------
 
     private void CrearPiezas()
     {

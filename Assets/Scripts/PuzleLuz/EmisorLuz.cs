@@ -17,7 +17,7 @@ public class EmisorLuz : MonoBehaviour
     public Color colorRayo = Color.white;
     // cuánto brilla el rayo: 1 = color normal; más de 1 hace que el Bloom le dé un halo
     public float brilloRayo = 3f;
-    // si lo dejas vacío se crea uno; si pones el tuyo, el brillo depende de tu material
+    // si lo dejas vacío se crea uno; si se coloca otro material, el brillo depende de ese material
     public Material materialRayo;
 
     [Header("Luces del rayo")]
@@ -48,7 +48,7 @@ public class EmisorLuz : MonoBehaviour
         else
         {
             linea.material = new Material(Shader.Find("Sprites/Default"));
-            // un color "más blanco que el blanco" (valores mayores que 1): así el Bloom lo hace brillar
+            // un color muy blanco (valores mayores que 1): así el Bloom lo hace brillar
             linea.material.color = new Color(brilloRayo, brilloRayo, brilloRayo, 1f);
         }
         linea.startColor = colorRayo;

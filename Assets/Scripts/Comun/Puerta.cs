@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // La puerta se queda cerrada hasta que alguien llama a Abrir().
-// Al abrirse gira sobre su bisagra poco a poco, como una puerta de verdad.
+// Al abrirse gira sobre su bisagra poco a poco
 //
 // El objeto con este script es la BISAGRA: la hoja de la puerta es un hijo
 // colocado de forma que su borde queda en el pivote de este objeto.
@@ -38,7 +38,7 @@ public class Puerta : MonoBehaviour
         {
             abierta = true;
             efectoSonido.ReproducirSonidoPuerta();
-            Debug.Log("Puerta abierta!");
+            Debug.Log("¡Puerta abierta!");
         }
     }
 }

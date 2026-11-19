@@ -11,7 +11,6 @@ public class Baldosa : MonoBehaviour
     private Renderer render;
     private bool encendida = false;
 
-    // Awake se ejecuta justo al añadir el script
     void Awake()
     {
         // InChildren por si es un prefab con el modelo en un objeto hijo

@@ -31,15 +31,7 @@ using UnityEngine.Events;
 // necesita que haya las mismas claras que oscuras (o una más del color de la entrada).
 // Por eso elegimos de qué color es cada roca: si no, la mayoría de intentos serían imposibles.
 //
-// PARA USARLO EN OTRO PROYECTO:
-// - Copia las carpetas Comun y PuzleBaldosas.
-// - Crea un objeto vacío, ponlo SOBRE EL SUELO de la sala y añádele este script.
-// - Ajusta el número y el tamaño de las baldosas hasta que el recuadro cian quepa en la sala.
-// - Arrastra la puerta de entrada a "Entrada" (el camino empieza en la baldosa más cercana),
-//   la de salida a "Salida" (esa baldosa nunca tendrá roca) y el jugador a "Jugador".
-// - El interruptor de reinicio se pone solo junto a la entrada. Si quieres elegir el sitio,
-//   crea un objeto vacío donde lo quieras y arrástralo a "Lugar Interruptor".
-// - En "Al Resolver" conecta lo que deba pasar al resolverlo (por ejemplo Puerta > Abrir).
+
 public class GeneradorPuzleBaldosas : MonoBehaviour
 {
     [Header("Baldosas")]
@@ -168,8 +160,6 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
         CrearPiezas();
     }
 
-    // ---------------- JUEGO ----------------
-
     void Update()
     {
         if (resuelto || jugador == null || baldosas == null)
@@ -250,8 +240,6 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
         // avisamos a todo lo que se haya conectado en el Inspector (abrir puerta, sonido...)
         alResolver.Invoke();
     }
-
-    // ---------------- GENERAR ----------------
 
     private bool IntentarCrearPuzle(int rocas)
     {
@@ -466,8 +454,6 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
         return salidas;
     }
 
-    // ---------------- CUADRICULA ----------------
-
     // Una celda es libre (tendrá baldosa) si está dentro y no tiene obstáculo ni roca
     private bool EsLibre(Vector2Int celda)
     {
@@ -614,8 +600,6 @@ public class GeneradorPuzleBaldosas : MonoBehaviour
             haySalida = true;
         }
     }
-
-    // ---------------- CREAR OBJETOS ----------------
 
     private void CrearPiezas()
     {

@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Script principal del Player para los controles y animaciones
+
 public class Player : MonoBehaviour
 {
     [SerializeField] private float velocidadMovimiento;
@@ -55,8 +57,7 @@ public class Player : MonoBehaviour
         }
     }
     
-    // Interactua con el objeto que tenemos delante (el que esta resaltado).
-    // El jugador no sabe si es un espejo, una palanca...: cada uno sabe lo que tiene que hacer.
+    // Interactua con el objeto que hay delante (resaltado).
     private void Interactuar()
     {
         if (objetoSeleccionado != null)
@@ -66,7 +67,6 @@ public class Player : MonoBehaviour
         }
     }
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -74,7 +74,6 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         // inputH = Input.GetAxis("Horizontal");

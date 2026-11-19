@@ -123,8 +123,6 @@ public class GeneradorPuzleHielo : MonoBehaviour
         CrearPiezas();
     }
 
-    // ---------------- JUEGO ----------------
-
     // Lo llama el bloque cuando el jugador lo empuja
     public void EmpujarBloque(Vector3 direccionMundo, Transform quienEmpuja)
     {
@@ -398,8 +396,6 @@ public class GeneradorPuzleHielo : MonoBehaviour
         return Vector2Int.zero;
     }
 
-    // ---------------- GENERAR ----------------
-
     private bool IntentarCrearPuzle(int minimo)
     {
         ColocarRocas();
@@ -537,8 +533,6 @@ public class GeneradorPuzleHielo : MonoBehaviour
         return true;
     }
 
-    // ---------------- CUADRICULA ----------------
-
     private void CalcularCuadricula()
     {
         columnas = Mathf.FloorToInt(tamanoZona.x / tamanoCelda);
@@ -618,8 +612,6 @@ public class GeneradorPuzleHielo : MonoBehaviour
             }
         }
     }
-
-    // ---------------- CREAR OBJETOS ----------------
 
     private void CrearPiezas()
     {

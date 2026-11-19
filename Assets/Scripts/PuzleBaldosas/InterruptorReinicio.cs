@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// El interruptor del puzle de baldosas: al usarlo, todas las baldosas se apagan
-// y el jugador puede volver a empezar.
+// El interruptor del puzle de baldosas: al usarlo, todas las baldosas se apagan y el jugador puede volver a empezar.
 // Lo crea el generador junto a la entrada de la sala.
-// Hereda de Interactuable para que el jugador pueda usarlo sin saber qué es.
+
 public class InterruptorReinicio : Interactuable
 {
     public GeneradorPuzleBaldosas generador;

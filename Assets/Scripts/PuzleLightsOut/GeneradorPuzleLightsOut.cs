@@ -23,13 +23,7 @@ using UnityEngine.Events;
 // - El orden de las pulsaciones da igual.
 // Así que una solución es simplemente "qué lámparas pulsar", cada una como mucho una vez.
 //
-// PARA USARLO EN OTRO PROYECTO:
-// - Copia las carpetas Comun y PuzleLightsOut.
-// - Crea un objeto vacío, ponlo SOBRE EL SUELO de la sala y añádele este script.
-// - Ajusta el número de lámparas y la separación hasta que el recuadro cian quepa en la sala.
-// - En "Al Resolver" conecta lo que deba pasar al resolverlo (por ejemplo Puerta > Abrir).
-// - En tu jugador, al pulsar interactuar, llama a Interactuar(transform) del Interactuable
-//   que tenga delante (mira Player.cs de este proyecto como ejemplo).
+
 public class GeneradorPuzleLightsOut : MonoBehaviour
 {
     [Header("Lámparas")]
@@ -123,8 +117,6 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
         Debug.Log("Puzle Lights Out: se resuelve con " + pulsacionesSolucion + " pulsaciones como mínimo");
         CrearLamparas();
     }
-
-    // ---------------- JUEGO ----------------
 
     // Lo llama una lámpara cuando el jugador interactúa con ella
     public void Pulsar(Vector2Int celda)
@@ -300,8 +292,6 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
         }
     }
 
-    // ---------------- GENERAR ----------------
-
     private bool IntentarCrearPuzle(int minimo)
     {
         // empezamos resuelto: todas encendidas
@@ -340,8 +330,6 @@ public class GeneradorPuzleLightsOut : MonoBehaviour
         float z = (celda.y - (filas - 1) / 2f) * separacion;
         return transform.position + transform.right * x + transform.forward * z;
     }
-
-    // ---------------- CREAR OBJETOS ----------------
 
     private void CrearLamparas()
     {

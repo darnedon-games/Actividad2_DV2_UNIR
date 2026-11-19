@@ -5,8 +5,8 @@ using UnityEngine;
 // El jugador solo conoce esta clase: busca el Interactuable que tiene delante,
 // lo resalta y, al pulsar interactuar, llama a Interactuar(jugador).
 // Se le pasa el jugador por si el objeto necesita saber donde esta
-// Cada objeto concreto hereda de aqui y decide que hace con "override".
-//
+// Cada objeto concreto hereda de aqui
+
 public class Interactuable : MonoBehaviour
 {
     // Lo que pasa cuando el jugador pulsa interactuar teniendo este objeto delante
@@ -14,7 +14,7 @@ public class Interactuable : MonoBehaviour
     {
     }
 
-    // Se llama con true cuando el jugador lo tiene delante y con false cuando deja de tenerlo
+    // Se llama con true cuando el jugador lo tiene delante y con false cuando no
     public virtual void Resaltar(bool activar)
     {
     }

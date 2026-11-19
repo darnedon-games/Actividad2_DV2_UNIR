@@ -9,7 +9,6 @@ public class Creature : MonoBehaviour
     private bool isWalking;
     private float tiempoDeVida = 10f; // segundos antes de destruirse
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
         anim = GetComponent<Animator>();
